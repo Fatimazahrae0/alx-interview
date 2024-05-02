@@ -1,21 +1,21 @@
 #!/usr/bin/python3
 """
-This is a module that provides a function for determining if all
-boxes in a given list can be opened.
+Method to determine if all boxes can be opened
+Using prototype: def canUnlockAll(boxes)
 """
+
+
 def canUnlockAll(boxes):
-    if not boxes:
-        return False
+    """
+    Check if boxes can be unlocked
+    """
+    for key in range(1, len(boxes) - 1):
+        ctr = False
+        for idx in range(len(boxes)):
+            ctr = (key in boxes[idx] and key != idx)
+            if ctr:
+                break
+        if ctr is False:
+            return ctr
+    return True
 
-    visited = [False] * len(boxes)
-    visited[0] = True
-    queue = [0]
-
-    while queue:
-        current_box = queue.pop(0)
-        for key in boxes[current_box]:
-            if 0 <= key < len(boxes) and not visited[key]:
-                visited[key] = True
-                queue.append(key)
-
-    return all(visited)
