@@ -50,3 +50,6 @@ def nqueens(N):
     # Initialize board
     board = [[0] * N for _ in range(N)]
     solve_nqueens(board, 0, N)
+
+if __name__ == "__main__":
+    nqueens(sys.argv[1])
