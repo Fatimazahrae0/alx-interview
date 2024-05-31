@@ -1,55 +1,57 @@
 #!/usr/bin/python3
+
 import sys
 
-def is_safe(board, row, col, n):
-    # Check if there's a queen in the same column
-    for i in range(row):
-        if board[i][col] == 1:
-            return False
-    
-    # Check upper diagonal on left side
-    for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
-        if board[i][j] == 1:
-            return False
-    
-    # Check upper diagonal on right side
-    for i, j in zip(range(row, -1, -1), range(col, n)):
-        if board[i][j] == 1:
-            return False
-    
-    return True
 
-def solve_nqueens(board, row, n):
-    if row == n:
-        # Convert board to the required format
-        solution = [[i, board[i].index(1)] for i in range(n)]
-        print(solution)
-        return
+def solve(row, column):
+    solver = [[]]
+    for q in range(row):
+        solver = place_queen(q, column, solver)
+    return solver
 
-    for col in range(n):
-        if is_safe(board, row, col, n):
-            board[row][col] = 1
-            solve_nqueens(board, row + 1, n)
-            board[row][col] = 0
 
-def nqueens(N):
+def place_queen(q, column, prev_solver):
+    solver_queen = []
+    for array in prev_solver:
+        for x in range(column):
+            if is_safe(q, x, array):
+                solver_queen.append(array + [x])
+    return solver_queen
+
+
+def is_safe(q, x, array):
+    if x in array:
+        return (False)
+    else:
+        return all(abs(array[column] - x) != q - column
+                   for column in range(q))
+
+
+def init():
     if len(sys.argv) != 2:
         print("Usage: nqueens N")
         sys.exit(1)
-
-    try:
-        N = int(N)
-    except ValueError:
+    if sys.argv[1].isdigit():
+        the_queen = int(sys.argv[1])
+    else:
         print("N must be a number")
         sys.exit(1)
-
-    if N < 4:
+    if the_queen < 4:
         print("N must be at least 4")
         sys.exit(1)
+    return(the_queen)
 
-    # Initialize board
-    board = [[0] * N for _ in range(N)]
-    solve_nqueens(board, 0, N)
 
-if __name__ == "__main__":
-    nqueens(sys.argv[1])
+def n_queens():
+
+    the_queen = init()
+    solver = solve(the_queen, the_queen)
+    for array in solver:
+        clean = []
+        for q, x in enumerate(array):
+            clean.append([q, x])
+        print(clean)
+
+
+if __name__ == '__main__':
+    n_queens()
