@@ -1,28 +1,42 @@
-#!/usr/bin/node
 const request = require('request');
-const { argv } = require('process');
 
-const url = 'https://swapi-api.hbtn.io/api/films/' + argv[2];
+const movieId = process.argv[2];
 
-request(url, async (error, response, body) => {
+if (!movieId) {
+  console.error('Please provide a movie ID as the first argument');
+  process.exit(1);
+}
+
+const apiUrl = `https://swapi.dev/api/films/${movieId}/`;
+
+request(apiUrl, (error, response, body) => {
   if (error) {
-    console.log(error);
-  } else {
-    for (const value of JSON.parse(body).characters) {
-      const res = await Makerequest(value);
-      console.log(res);
-    }
+    console.error('Error:', error);
+    return;
   }
-});
 
-function Makerequest (url) {
-  return new Promise((resolve, reject) => {
-    request(url, (err, response, body) => {
-      if (err) {
-        console.log(err);
-      } else {
-        resolve(JSON.parse(body).name);
+  if (response.statusCode !== 200) {
+    console.error('Request failed with status code:', response.statusCode);
+    return;
+  }
+
+  const film = JSON.parse(body);
+  const charactersUrls = film.characters;
+
+  charactersUrls.forEach(characterUrl => {
+    request(characterUrl, (error, response, body) => {
+      if (error) {
+        console.error('Error:', error);
+        return;
       }
+
+      if (response.statusCode !== 200) {
+        console.error('Request failed with status code:', response.statusCode);
+        return;
+      }
+
+      const character = JSON.parse(body);
+      console.log(character.name);
     });
   });
-}
+});
